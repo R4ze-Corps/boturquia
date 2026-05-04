@@ -328,6 +328,82 @@ module.exports = async (interaction, client) => {
       }
 
       // Vendas
+      if (customId === "btn_abrir_carrinho") {
+        const itens = sessoesVenda.get(interaction.user.id) || [];
+        if (itens.length === 0) {
+          sessoesVenda.set(interaction.user.id, []);
+        }
+
+        const options = Object.entries(catalogoVendas).map(([key, value]) => ({
+          label: value.nome,
+          value: key,
+          description: `Parceria: R$${value.parceria} | Pista: R$${value.pista}`,
+        }));
+
+        const menu = new StringSelectMenuBuilder()
+          .setCustomId("menu_vendas_produtos")
+          .setPlaceholder("Selecione um produto para adicionar...")
+          .addOptions(options);
+
+        const rowMenu = new ActionRowBuilder().addComponents(menu);
+
+        let descricao = "";
+        let totalParceria = 0;
+        let totalPista = 0;
+
+        if (itens.length > 0) {
+          descricao = "**Itens no Carrinho:**\n\n";
+          itens.forEach((item) => {
+            const prod = catalogoVendas[item.id];
+            descricao += `• ${item.qtd}x **${prod.nome}**\n`;
+            totalParceria += prod.parceria * item.qtd;
+            totalPista += prod.pista * item.qtd;
+          });
+        } else {
+          descricao =
+            "Seu carrinho está vazio.\nSelecione um produto no menu abaixo para adicionar.";
+        }
+
+        const embed = new EmbedBuilder()
+          .setColor(COR_PADRAO)
+          .setTitle("🛒 SEU CARRINHO")
+          .setDescription(descricao);
+
+        if (itens.length > 0) {
+          embed.addFields(
+            {
+              name: "Subtotal Parceria",
+              value: formatarMoeda(totalParceria),
+              inline: true,
+            },
+            {
+              name: "Subtotal Pista",
+              value: formatarMoeda(totalPista),
+              inline: true,
+            },
+          );
+        }
+
+        const rowBtns = new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setCustomId("btn_finalizar_venda")
+            .setLabel("Finalizar Venda")
+            .setStyle(ButtonStyle.Success),
+          new ButtonBuilder()
+            .setCustomId("btn_limpar_carrinho")
+            .setLabel("Limpar Carrinho")
+            .setStyle(ButtonStyle.Danger),
+        );
+
+        const components = itens.length > 0 ? [rowMenu, rowBtns] : [rowMenu];
+
+        await interaction.reply({
+          embeds: [embed],
+          components: components,
+          ephemeral: true,
+        });
+      }
+
       if (customId === "btn_limpar_carrinho") {
         sessoesVenda.delete(interaction.user.id);
         await interaction.update({
@@ -991,27 +1067,48 @@ module.exports = async (interaction, client) => {
         const itemAtual = dados[dados.length - 1];
         itemAtual.qtd = qtd;
 
-        const prod = catalogoVendas[itemAtual.id];
+        let descricao = "**Itens no Carrinho:**\n\n";
+        let totalParceria = 0;
+        let totalPista = 0;
+
+        dados.forEach((item) => {
+          const prod = catalogoVendas[item.id];
+          descricao += `• ${item.qtd}x **${prod.nome}**\n`;
+          totalParceria += prod.parceria * item.qtd;
+          totalPista += prod.pista * item.qtd;
+        });
+
         const embed = new EmbedBuilder()
           .setColor(COR_PADRAO)
-          .setTitle("🛒 CARRINHO")
-          .setDescription(
-            `Você adicionou ${qtd}x **${prod.nome}**.\nDeseja adicionar mais ou finalizar?`,
-          )
+          .setTitle("🛒 SEU CARRINHO")
+          .setDescription(descricao)
           .addFields(
             {
               name: "Subtotal Parceria",
-              value: formatarMoeda(prod.parceria * qtd),
+              value: formatarMoeda(totalParceria),
               inline: true,
             },
             {
               name: "Subtotal Pista",
-              value: formatarMoeda(prod.pista * qtd),
+              value: formatarMoeda(totalPista),
               inline: true,
             },
           );
 
-        const row = new ActionRowBuilder().addComponents(
+        const options = Object.entries(catalogoVendas).map(([key, value]) => ({
+          label: value.nome,
+          value: key,
+          description: `Parceria: R$${value.parceria} | Pista: R$${value.pista}`,
+        }));
+
+        const menu = new StringSelectMenuBuilder()
+          .setCustomId("menu_vendas_produtos")
+          .setPlaceholder("Adicionar mais produtos...")
+          .addOptions(options);
+
+        const rowMenu = new ActionRowBuilder().addComponents(menu);
+
+        const rowBtns = new ActionRowBuilder().addComponents(
           new ButtonBuilder()
             .setCustomId("btn_finalizar_venda")
             .setLabel("Finalizar Venda")
@@ -1022,10 +1119,9 @@ module.exports = async (interaction, client) => {
             .setStyle(ButtonStyle.Danger),
         );
 
-        await interaction.reply({
+        await interaction.update({
           embeds: [embed],
-          components: [row],
-          ephemeral: true,
+          components: [rowMenu, rowBtns],
         });
       }
 
