@@ -1,4 +1,10 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, PermissionFlagsBits } = require("discord.js");
+const {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  ActionRowBuilder,
+  StringSelectMenuBuilder,
+  PermissionFlagsBits,
+} = require("discord.js");
 const { COR_PRETO } = require("../config/constants");
 const catalogoVendas = require("../config/catalogoVendas");
 
@@ -12,14 +18,21 @@ module.exports = {
     const embed = new EmbedBuilder()
       .setColor(COR_PRETO)
       .setTitle("🛒 PAINEL DE VENDAS - TURQUIA")
-      .setDescription("Selecione os produtos abaixo para adicionar ao seu carrinho.")
-      .setImage("https://media.discordapp.net/attachments/1118674962191728721/1118674962191728721/image.png")
+      .setDescription(
+        "Selecione os produtos abaixo para adicionar ao seu carrinho.",
+      )
+      .setThumbnail(
+        "https://r2.fivemanage.com/vLUsF9vzqBOo7DSFHERFX/logo-jpg(1).png",
+      )
+      .setImage(
+        "https://r2.fivemanage.com/vLUsF9vzqBOo7DSFHERFX/Gemini_Generated_Image_nenl89nenl89nenl.png",
+      )
       .setFooter({ text: "Raze Corp.  •  Turquia" });
 
     const options = Object.entries(catalogoVendas).map(([key, value]) => ({
       label: value.nome,
       value: key,
-      description: `Parceria: R$${value.parceria} | Pista: R$${value.pista}`
+      description: `Parceria: R$${value.parceria} | Pista: R$${value.pista}`,
     }));
 
     const menu = new StringSelectMenuBuilder()
