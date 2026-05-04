@@ -51,6 +51,11 @@ const { gerarEmbedHierarquia } = require("../utils/hierarquia");
 const { safeNickname } = require("../utils/nickHelpers");
 const { formatarMoeda, formatarDataBR } = require("../utils/formatters");
 const { criarSalaFarm } = require("../utils/farmHelpers");
+const {
+  montarEmbedCarrinhoVenda,
+  montarComponentesVenda,
+  calcularTotaisVenda,
+} = require("../utils/vendasHelpers");
 const catalogoVendas = require("../config/catalogoVendas");
 const cargosTurquia = require("../config/cargosHierarquia");
 
@@ -328,78 +333,17 @@ module.exports = async (interaction, client) => {
       }
 
       // Vendas
-      if (customId === "btn_abrir_carrinho") {
-        const itens = sessoesVenda.get(interaction.user.id) || [];
-        if (itens.length === 0) {
-          sessoesVenda.set(interaction.user.id, []);
-        }
+      if (customId === "btn_venda_parceria" || customId === "btn_venda_pista") {
+        const tipo = customId === "btn_venda_parceria" ? "parceria" : "pista";
+        sessoesVenda.set(interaction.user.id, { tipo, itens: [] });
 
-        const options = Object.entries(catalogoVendas).map(([key, value]) => ({
-          label: value.nome,
-          value: key,
-          description: `Parceria: R$${value.parceria} | Pista: R$${value.pista}`,
-        }));
-
-        const menu = new StringSelectMenuBuilder()
-          .setCustomId("menu_vendas_produtos")
-          .setPlaceholder("Selecione um produto para adicionar...")
-          .addOptions(options);
-
-        const rowMenu = new ActionRowBuilder().addComponents(menu);
-
-        let descricao = "";
-        let totalParceria = 0;
-        let totalPista = 0;
-
-        if (itens.length > 0) {
-          descricao = "**Itens no Carrinho:**\n\n";
-          itens.forEach((item) => {
-            const prod = catalogoVendas[item.id];
-            descricao += `• ${item.qtd}x **${prod.nome}**\n`;
-            totalParceria += prod.parceria * item.qtd;
-            totalPista += prod.pista * item.qtd;
-          });
-        } else {
-          descricao =
-            "Seu carrinho está vazio.\nSelecione um produto no menu abaixo para adicionar.";
-        }
-
-        const embed = new EmbedBuilder()
-          .setColor(COR_PADRAO)
-          .setTitle("🛒 SEU CARRINHO")
-          .setDescription(descricao);
-
-        if (itens.length > 0) {
-          embed.addFields(
-            {
-              name: "Subtotal Parceria",
-              value: formatarMoeda(totalParceria),
-              inline: true,
-            },
-            {
-              name: "Subtotal Pista",
-              value: formatarMoeda(totalPista),
-              inline: true,
-            },
-          );
-        }
-
-        const rowBtns = new ActionRowBuilder().addComponents(
-          new ButtonBuilder()
-            .setCustomId("btn_finalizar_venda")
-            .setLabel("Finalizar Venda")
-            .setStyle(ButtonStyle.Success),
-          new ButtonBuilder()
-            .setCustomId("btn_limpar_carrinho")
-            .setLabel("Limpar Carrinho")
-            .setStyle(ButtonStyle.Danger),
-        );
-
-        const components = itens.length > 0 ? [rowMenu, rowBtns] : [rowMenu];
+        const sessao = sessoesVenda.get(interaction.user.id);
+        const embed = montarEmbedCarrinhoVenda(interaction.user.id, sessao);
+        const componentes = montarComponentesVenda(sessao);
 
         await interaction.reply({
           embeds: [embed],
-          components: components,
+          components: componentes,
           ephemeral: true,
         });
       }
@@ -414,23 +358,17 @@ module.exports = async (interaction, client) => {
       }
 
       if (customId === "btn_finalizar_venda") {
-        const itens = sessoesVenda.get(interaction.user.id);
-        if (!itens || itens.length === 0)
+        const sessao = sessoesVenda.get(interaction.user.id);
+        if (!sessao || sessao.itens.length === 0)
           return interaction.reply({
             content: "Seu carrinho está vazio.",
             ephemeral: true,
           });
 
-        let totalParceria = 0;
-        let totalPista = 0;
-        let listaProdutos = "";
-
-        itens.forEach((item) => {
-          const prod = catalogoVendas[item.id];
-          totalParceria += prod.parceria * item.qtd;
-          totalPista += prod.pista * item.qtd;
-          listaProdutos += `• ${item.qtd}x **${prod.nome}**\n`;
-        });
+        const { itens, total, deposito } = calcularTotaisVenda(sessao);
+        const listaProdutos = itens
+          .map((i) => `• ${i.quantidade}x **${i.nome}**`)
+          .join("\n");
 
         const logChannel =
           interaction.guild.channels.cache.get(CANAL_LOG_VENDAS_ID);
@@ -444,15 +382,20 @@ module.exports = async (interaction, client) => {
                 value: `<@${interaction.user.id}>`,
                 inline: true,
               },
+              {
+                name: "Tipo",
+                value: sessao.tipo === "pista" ? "Pista" : "Parceria",
+                inline: true,
+              },
               { name: "Produtos", value: listaProdutos || "---" },
               {
-                name: "Total Parceria",
-                value: formatarMoeda(totalParceria),
+                name: "Total",
+                value: formatarMoeda(total),
                 inline: true,
               },
               {
-                name: "Total Pista",
-                value: formatarMoeda(totalPista),
+                name: "30% Organização",
+                value: formatarMoeda(deposito),
                 inline: true,
               },
             )
@@ -1063,65 +1006,22 @@ module.exports = async (interaction, client) => {
             ephemeral: true,
           });
 
-        const dados = sessoesVenda.get(interaction.user.id);
-        const itemAtual = dados[dados.length - 1];
-        itemAtual.qtd = qtd;
+        const sessao = sessoesVenda.get(interaction.user.id);
+        if (!sessao)
+          return interaction.reply({
+            content: "Sessão não encontrada.",
+            ephemeral: true,
+          });
 
-        let descricao = "**Itens no Carrinho:**\n\n";
-        let totalParceria = 0;
-        let totalPista = 0;
+        const itemAtual = sessao.itens[sessao.itens.length - 1];
+        itemAtual.quantidade = qtd;
 
-        dados.forEach((item) => {
-          const prod = catalogoVendas[item.id];
-          descricao += `• ${item.qtd}x **${prod.nome}**\n`;
-          totalParceria += prod.parceria * item.qtd;
-          totalPista += prod.pista * item.qtd;
-        });
-
-        const embed = new EmbedBuilder()
-          .setColor(COR_PADRAO)
-          .setTitle("🛒 SEU CARRINHO")
-          .setDescription(descricao)
-          .addFields(
-            {
-              name: "Subtotal Parceria",
-              value: formatarMoeda(totalParceria),
-              inline: true,
-            },
-            {
-              name: "Subtotal Pista",
-              value: formatarMoeda(totalPista),
-              inline: true,
-            },
-          );
-
-        const options = Object.entries(catalogoVendas).map(([key, value]) => ({
-          label: value.nome,
-          value: key,
-          description: `Parceria: R$${value.parceria} | Pista: R$${value.pista}`,
-        }));
-
-        const menu = new StringSelectMenuBuilder()
-          .setCustomId("menu_vendas_produtos")
-          .setPlaceholder("Adicionar mais produtos...")
-          .addOptions(options);
-
-        const rowMenu = new ActionRowBuilder().addComponents(menu);
-
-        const rowBtns = new ActionRowBuilder().addComponents(
-          new ButtonBuilder()
-            .setCustomId("btn_finalizar_venda")
-            .setLabel("Finalizar Venda")
-            .setStyle(ButtonStyle.Success),
-          new ButtonBuilder()
-            .setCustomId("btn_limpar_carrinho")
-            .setLabel("Limpar Carrinho")
-            .setStyle(ButtonStyle.Danger),
-        );
+        const embed = montarEmbedCarrinhoVenda(interaction.user.id, sessao);
+        const componentes = montarComponentesVenda(sessao);
 
         await interaction.update({
           embeds: [embed],
-          components: [rowMenu, rowBtns],
+          components: componentes,
         });
       }
 
@@ -1394,9 +1294,14 @@ module.exports = async (interaction, client) => {
 
       if (customId === "menu_vendas_produtos") {
         const prodId = interaction.values[0];
-        if (!sessoesVenda.has(interaction.user.id))
-          sessoesVenda.set(interaction.user.id, []);
-        sessoesVenda.get(interaction.user.id).push({ id: prodId, qtd: 0 });
+        const sessao = sessoesVenda.get(interaction.user.id);
+        if (!sessao)
+          return interaction.reply({
+            content: "Sessão não encontrada.",
+            ephemeral: true,
+          });
+
+        sessao.itens.push({ key: prodId, quantidade: 0 });
 
         const modal = new ModalBuilder()
           .setCustomId("modal_venda_qtd")

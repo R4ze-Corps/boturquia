@@ -1,4 +1,10 @@
-const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+const {
+  EmbedBuilder,
+  ActionRowBuilder,
+  StringSelectMenuBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+} = require("discord.js");
 const { formatarMoeda } = require("./formatters");
 const catalogoVendas = require("../config/catalogoVendas");
 
@@ -63,12 +69,12 @@ function montarComponentesVenda(sessao) {
   const rowMenu = new ActionRowBuilder().addComponents(menuProdutos);
   const rowAcoes = new ActionRowBuilder().addComponents(
     new ButtonBuilder()
-      .setCustomId("venda_preview")
-      .setLabel("📋 Ver Preview")
+      .setCustomId("btn_finalizar_venda")
+      .setLabel("✅ Finalizar Venda")
       .setStyle(ButtonStyle.Success),
     new ButtonBuilder()
-      .setCustomId("venda_cancelar")
-      .setLabel("❌ Cancelar")
+      .setCustomId("btn_limpar_carrinho")
+      .setLabel("❌ Limpar Carrinho")
       .setStyle(ButtonStyle.Danger),
   );
 

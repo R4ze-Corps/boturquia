@@ -87,6 +87,20 @@ const commands = [
     name: "suporte",
     description: "Envia o painel de suporte para abertura de tickets.",
   },
+  {
+    name: "limpar",
+    description: "Limpa as mensagens do canal atual.",
+    options: [
+      {
+        type: 4,
+        name: "quantidade",
+        description: "Quantidade de mensagens a serem limpas (máximo 100).",
+        required: false,
+        min_value: 1,
+        max_value: 100,
+      },
+    ],
+  },
 ];
 
 // VARIÁVEIS IMPORTANTES - PREENCHA COM OS SEUS DADOS

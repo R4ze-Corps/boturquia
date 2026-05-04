@@ -23,7 +23,7 @@ module.exports = {
         "Clique no botão abaixo para abrir o seu carrinho de compras e adicionar produtos.",
       )
       .setThumbnail(
-        "https://r2.fivemanage.com/vLUsF9vzqBOo7DSFHERFX/logo-jpg(1).png",
+        "https://r2.fivemanage.com/vLUsF9vzqBOo7DSFHERFX/logo-png(1).png",
       )
       .setImage(
         "https://r2.fivemanage.com/vLUsF9vzqBOo7DSFHERFX/Gemini_Generated_Image_nenl89nenl89nenl.png",
@@ -32,8 +32,12 @@ module.exports = {
 
     const row = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
-        .setCustomId("btn_abrir_carrinho")
-        .setLabel("🛒 Abrir Carrinho")
+        .setCustomId("btn_venda_parceria")
+        .setLabel("🛒 Venda Parceria")
+        .setStyle(ButtonStyle.Success),
+      new ButtonBuilder()
+        .setCustomId("btn_venda_pista")
+        .setLabel("🛒 Venda Pista")
         .setStyle(ButtonStyle.Primary),
     );
 
