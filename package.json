@@ -1,0 +1,14 @@
+{
+  "name": "bot-turquia",
+  "version": "1.0.0",
+  "description": "Bot de Vendas",
+  "main": "index.js",
+  "scripts": {
+    "start": "node deploy.js && node index.js",
+    "build": "echo \"Sem necessidade de build\""
+  },
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.6.1"
+  }
+}
