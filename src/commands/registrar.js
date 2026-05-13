@@ -13,7 +13,7 @@ module.exports = {
       .setTitle("Sistema de Registro")
       .setDescription(
         "Para fazer sua liberação, precisamos de algumas informações suas.\n\n" +
-        "Por favor, clique no botão abaixo para abrir o formulário e preencher seu **Nome, ID, Recrutador e Telefone**."
+        "Por favor, clique no botão abaixo para abrir o formulário e preencher seu **Nome, ID, Recrutador** e **Telefone.**"
       );
 
     const row = new ActionRowBuilder().addComponents(
