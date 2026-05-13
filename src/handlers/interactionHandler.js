@@ -271,7 +271,7 @@ module.exports = async (interaction, client) => {
         await interaction.reply({
           embeds: [embed],
           components: componentes,
-          ephemeral: true,
+          flags: 64,
         });
       }
 
@@ -289,7 +289,7 @@ module.exports = async (interaction, client) => {
         if (!sessao || sessao.itens.length === 0)
           return interaction.reply({
             content: "Seu carrinho está vazio.",
-            ephemeral: true,
+            flags: 64,
           });
 
         const { itens, total, deposito } = calcularTotaisVenda(sessao);
@@ -349,7 +349,7 @@ module.exports = async (interaction, client) => {
         if (!acao)
           return interaction.reply({
             content: "Ação não encontrada.",
-            ephemeral: true,
+            flags: 64,
           });
 
         const userId = interaction.user.id;
@@ -362,7 +362,7 @@ module.exports = async (interaction, client) => {
           } else {
             return interaction.reply({
               content: "Vagas preenchidas. Entre como reserva.",
-              ephemeral: true,
+              flags: 64,
             });
           }
         } else if (customId.includes("reserva")) {
@@ -404,7 +404,7 @@ module.exports = async (interaction, client) => {
         if (interaction.user.id !== acao.criadorId)
           return interaction.reply({
             content: "Apenas o criador pode iniciar.",
-            ephemeral: true,
+            flags: 64,
           });
 
         const pingMsg = await interaction.channel.send({
@@ -436,7 +436,7 @@ module.exports = async (interaction, client) => {
         if (interaction.user.id !== acao.criadorId)
           return interaction.reply({
             content: "Apenas o criador pode finalizar.",
-            ephemeral: true,
+            flags: 64,
           });
 
         if (customId.includes("vitoria")) {
@@ -478,7 +478,7 @@ module.exports = async (interaction, client) => {
         await interaction.reply({
           content: "Selecione o membro:",
           components: [new ActionRowBuilder().addComponents(userSelect)],
-          ephemeral: true,
+          flags: 64,
         });
       }
 
@@ -524,7 +524,7 @@ module.exports = async (interaction, client) => {
         });
         await interaction.reply({
           content: `Canal criado: ${canal}`,
-          ephemeral: true,
+          flags: 64,
         });
       }
 
@@ -572,7 +572,7 @@ module.exports = async (interaction, client) => {
           );
         await interaction.reply({
           embeds: [embedStatus],
-          ephemeral: true,
+          flags: 64,
         });
       }
 
@@ -582,7 +582,7 @@ module.exports = async (interaction, client) => {
         ) {
           return interaction.reply({
             content: "❌ Apenas administradores podem configurar o painel.",
-            ephemeral: true,
+            flags: 64,
           });
         }
 
@@ -600,7 +600,7 @@ module.exports = async (interaction, client) => {
         await interaction.reply({
           content: "O que você deseja configurar?",
           components: [row],
-          ephemeral: true,
+          flags: 64,
         });
       }
 
@@ -659,7 +659,7 @@ module.exports = async (interaction, client) => {
         await interaction.reply({
           content: "Selecione de qual jogador você deseja editar o farm:",
           components: [row],
-          ephemeral: true,
+          flags: 64,
         });
       }
 
@@ -724,7 +724,7 @@ module.exports = async (interaction, client) => {
           return interaction.reply({
             content:
               "❌ **Acesso Negado:** Apenas membros autorizados podem fechar esta sala.",
-            ephemeral: true,
+            flags: 64,
           });
         }
         await interaction.reply("🔒 Esta sala será apagada em 5 segundos...");
@@ -739,7 +739,7 @@ module.exports = async (interaction, client) => {
         if (!farm)
           return interaction.reply({
             content: "Farm não encontrado.",
-            ephemeral: true,
+            flags: 64,
           });
 
         await interaction.reply(
@@ -797,7 +797,7 @@ module.exports = async (interaction, client) => {
           await interaction.message.delete().catch(() => {});
           await interaction.followUp({
             content: `✅ Farm de **${farm.qtd}x ${farm.itemNome}** registrado com sucesso!`,
-            ephemeral: true,
+            flags: 64,
           });
           farmEmAndamento.delete(interaction.channel.id);
         });
@@ -818,7 +818,7 @@ module.exports = async (interaction, client) => {
         if (!logChannelId) {
           return interaction.reply({
             content: "Canal de registro não configurado. Avise um administrador.",
-            ephemeral: true,
+            flags: 64,
           });
         }
 
@@ -826,7 +826,7 @@ module.exports = async (interaction, client) => {
         if (!logChannel?.isTextBased()) {
           return interaction.reply({
             content: "Canal de registro inválido. Avise um administrador.",
-            ephemeral: true,
+            flags: 64,
           });
         }
 
@@ -859,7 +859,7 @@ module.exports = async (interaction, client) => {
         await logChannel.send({ embeds: [embed], components: [row] });
         await interaction.reply({
           content: "Registro enviado para avaliação!",
-          ephemeral: true,
+          flags: 64,
         });
         return;
       }
@@ -895,7 +895,7 @@ module.exports = async (interaction, client) => {
           }
           await interaction.reply({
             content: "Punição aplicada e logada.",
-            ephemeral: true,
+            flags: 64,
           });
         }
       }
@@ -939,7 +939,7 @@ module.exports = async (interaction, client) => {
         }
         await interaction.reply({
           content: "Seu pedido de ausência foi enviado para análise.",
-          ephemeral: true,
+          flags: 64,
         });
       }
 
@@ -948,14 +948,14 @@ module.exports = async (interaction, client) => {
         if (isNaN(qtd) || qtd <= 0)
           return interaction.reply({
             content: "Quantidade inválida.",
-            ephemeral: true,
+            flags: 64,
           });
 
         const sessao = sessoesVenda.get(interaction.user.id);
         if (!sessao)
           return interaction.reply({
             content: "Sessão não encontrada.",
-            ephemeral: true,
+            flags: 64,
           });
 
         const itemAtual = sessao.itens[sessao.itens.length - 1];
@@ -1048,7 +1048,7 @@ module.exports = async (interaction, client) => {
         if (isNaN(qtd) || qtd <= 0)
           return interaction.reply({
             content: "Quantidade inválida.",
-            ephemeral: true,
+            flags: 64,
           });
 
         const farm = farmEmAndamento.get(interaction.channel.id);
@@ -1104,7 +1104,7 @@ module.exports = async (interaction, client) => {
 
         await interaction.reply({
           content: "✅ Produtos e metas atualizados com sucesso!",
-          ephemeral: true,
+          flags: 64,
         });
       }
 
@@ -1131,7 +1131,7 @@ module.exports = async (interaction, client) => {
         if (isNaN(p) || isNaN(a) || isNaN(po) || isNaN(f) || isNaN(s)) {
           return interaction.reply({
             content: "❌ Todos os valores devem ser números válidos.",
-            ephemeral: true,
+            flags: 64,
           });
         }
 
@@ -1144,7 +1144,7 @@ module.exports = async (interaction, client) => {
         });
         await interaction.reply({
           content: `✅ Farm do jogador <@${userId}> atualizado com sucesso!`,
-          ephemeral: true,
+          flags: 64,
         });
       }
 
@@ -1165,16 +1165,20 @@ module.exports = async (interaction, client) => {
 
           await interaction.reply({
             content: `✅ Sua sala de farm foi criada: ${canal}`,
-            ephemeral: true,
+            flags: 64,
           });
         }
       }
 
       if (customId === "menu_produtos_farm") {
         const itemKey = interaction.values[0];
+        const produto = configFarm[itemKey];
+        if (!produto) {
+          return interaction.reply({ content: "Produto não encontrado.", flags: 64 });
+        }
         farmEmAndamento.set(interaction.channel.id, {
           itemKey: itemKey,
-          itemNome: configFarm[itemKey].nome,
+          itemNome: produto.nome,
           userId: interaction.user.id,
         });
 
@@ -1196,7 +1200,7 @@ module.exports = async (interaction, client) => {
         if (!sessao)
           return interaction.reply({
             content: "Sessão não encontrada.",
-            ephemeral: true,
+            flags: 64,
           });
 
         sessao.itens.push({ key: prodId, quantidade: 0 });
@@ -1310,7 +1314,7 @@ module.exports = async (interaction, client) => {
         await interaction.reply({
           embeds: [embedStatus],
           components: [row],
-          ephemeral: true,
+          flags: 64,
         });
       }
 
@@ -1334,14 +1338,14 @@ module.exports = async (interaction, client) => {
       await interaction
         .followUp({
           content: "Ocorreu um erro ao processar sua interação.",
-          ephemeral: true,
+          flags: 64,
         })
         .catch(() => {});
     } else {
       await interaction
         .reply({
           content: "Ocorreu um erro ao processar sua interação.",
-          ephemeral: true,
+          flags: 64,
         })
         .catch(() => {});
     }

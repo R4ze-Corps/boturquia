@@ -25,7 +25,7 @@ async function handleModal(interaction) {
             ).setTimestamp()],
         });
       }
-      await interaction.reply({ content: "Punição aplicada e logada.", ephemeral: true });
+      await interaction.reply({ content: "Punição aplicada e logada.", flags: 64 });
     }
     return true;
   }

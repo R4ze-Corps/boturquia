@@ -17,7 +17,7 @@ async function handleButton(interaction) {
     const msgId = interaction.message.id;
     const acao = acoesEmAndamento.get(msgId);
     if (!acao) {
-      await interaction.reply({ content: "Ação não encontrada.", ephemeral: true });
+      await interaction.reply({ content: "Ação não encontrada.", flags: 64 });
       return true;
     }
 
@@ -29,7 +29,7 @@ async function handleButton(interaction) {
           acao.reservas = acao.reservas.filter(r => r !== userId);
         }
       } else {
-        await interaction.reply({ content: "Vagas preenchidas. Entre como reserva.", ephemeral: true });
+        await interaction.reply({ content: "Vagas preenchidas. Entre como reserva.", flags: 64 });
         return true;
       }
     } else if (id.includes("reserva")) {
@@ -54,7 +54,7 @@ async function handleButton(interaction) {
     const msgId = interaction.message.id;
     const acao = acoesEmAndamento.get(msgId);
     if (interaction.user.id !== acao.criadorId) {
-      await interaction.reply({ content: "Apenas o criador pode iniciar.", ephemeral: true });
+      await interaction.reply({ content: "Apenas o criador pode iniciar.", flags: 64 });
       return true;
     }
 
@@ -77,7 +77,7 @@ async function handleButton(interaction) {
     const msgId = interaction.message.id;
     const acao = acoesEmAndamento.get(msgId);
     if (interaction.user.id !== acao.criadorId) {
-      await interaction.reply({ content: "Apenas o criador pode finalizar.", ephemeral: true });
+      await interaction.reply({ content: "Apenas o criador pode finalizar.", flags: 64 });
       return true;
     }
 

@@ -26,7 +26,7 @@ module.exports = {
     // Verificar se quem usa tem permissão (pela lista de cargos)
     const hasPermission = interaction.member.roles.cache.some(r => CARGOS_LIDER_ORGANIZADOR.includes(r.id));
     if (!hasPermission && !interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
-        return interaction.reply({ content: "Você não tem permissão para usar este comando.", ephemeral: true });
+        return interaction.reply({ content: "Você não tem permissão para usar este comando.", flags: 64 });
     }
 
     const { ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder } = require("discord.js");

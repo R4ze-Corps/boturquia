@@ -38,7 +38,7 @@ async function handleButton(interaction) {
       components: [new ActionRowBuilder().addComponents(
         new UserSelectMenuBuilder().setCustomId("select_user_upar").setPlaceholder("Selecione o membro..."),
       )],
-      ephemeral: true,
+      flags: 64,
     });
     return true;
   }

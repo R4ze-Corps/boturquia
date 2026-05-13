@@ -23,12 +23,12 @@ module.exports = {
         .setColor("#00FF00")
         .setDescription(`✅ Limpeza concluída! **${deleted.size}** mensagens foram removidas.`);
 
-      await interaction.reply({ embeds: [embed], ephemeral: true });
+      await interaction.reply({ embeds: [embed], flags: 64 });
     } catch (error) {
       console.error("Erro ao limpar mensagens:", error);
       await interaction.reply({
         content: "❌ Ocorreu um erro ao tentar limpar as mensagens deste canal. Certifique-se de que as mensagens não têm mais de 14 dias.",
-        ephemeral: true,
+        flags: 64,
       });
     }
   },

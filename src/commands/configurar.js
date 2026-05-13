@@ -68,35 +68,35 @@ module.exports = {
       setConfigValue("canalRegistro", channel.id);
       await interaction.reply({
         content: `Canal de registro configurado: ${channel}`,
-        ephemeral: true,
+        flags: 64,
       });
     } else if (sub === "cargo-registrar") {
       const role = interaction.options.getRole("cargo");
       setConfigValue("cargos.registrar", role.id);
       await interaction.reply({
         content: `Cargo para registrar configurado: ${role}`,
-        ephemeral: true,
+        flags: 64,
       });
     } else if (sub === "cargo-aprovado") {
       const role = interaction.options.getRole("cargo");
       setConfigValue("cargos.aprovado", role.id);
       await interaction.reply({
         content: `Cargo de aprovado configurado: ${role}`,
-        ephemeral: true,
+        flags: 64,
       });
     } else if (sub === "changelog") {
       const channel = interaction.options.getChannel("canal");
       setConfigValue("canalChangelog", channel.id);
       await interaction.reply({
         content: `Canal de changelogs configurado: ${channel}`,
-        ephemeral: true,
+        flags: 64,
       });
     } else if (sub === "cargo-aprovado2") {
       const role = interaction.options.getRole("cargo");
       setConfigValue("cargos.aprovado2", role.id);
       await interaction.reply({
         content: `Segundo cargo de aprovado configurado: ${role}`,
-        ephemeral: true,
+        flags: 64,
       });
     }
   },

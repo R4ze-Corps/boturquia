@@ -32,7 +32,7 @@ async function handleButton(interaction) {
       embeds: [new EmbedBuilder().setColor(COR_PRETO).setTitle("Atendimento").setDescription("Aguarde um membro da gerência. Para fechar, clique no botão abaixo.")],
       components: [row],
     });
-    await interaction.reply({ content: `Canal criado: ${canal}`, ephemeral: true });
+    await interaction.reply({ content: `Canal criado: ${canal}`, flags: 64 });
     return true;
   }
 

@@ -106,7 +106,7 @@ async function handleModal(interaction) {
       );
       await avaliacaoChannel.send({ embeds: [embed], components: [row] });
     }
-    await interaction.reply({ content: "Seu pedido de ausência foi enviado para análise.", ephemeral: true });
+    await interaction.reply({ content: "Seu pedido de ausência foi enviado para análise.", flags: 64 });
     return true;
   }
   return false;

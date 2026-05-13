@@ -48,7 +48,7 @@ for (const line of afterVersion.split("\n")) {
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
-client.once("ready", async () => {
+client.once("clientReady", async () => {
   console.log(`[SendChangelog] Conectado como ${client.user.tag}`);
 
   const canalId = configRegistro.canalChangelog;

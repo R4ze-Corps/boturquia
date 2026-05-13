@@ -31,14 +31,14 @@ async function handleButton(interaction) {
         .setDescription(
           `Aqui está o total que você já entregou:\n\n📦 **${configFarm.plastico.nome}:** ${conta.plastico} / ${configFarm.plastico.meta}\n📦 **${configFarm.aluminio.nome}:** ${conta.aluminio} / ${configFarm.aluminio.meta}\n📦 **${configFarm.polvora.nome}:** ${conta.polvora} / ${configFarm.polvora.meta}\n📦 **${configFarm.ferro.nome}:** ${conta.ferro} / ${configFarm.ferro.meta}\n📦 **${configFarm.sd.nome}:** ${conta.sd} / ${configFarm.sd.meta}`,
         )],
-      ephemeral: true,
+      flags: 64,
     });
     return true;
   }
 
   if (id === "configurar_farm") {
     if (!interaction.member.permissions.has(PermissionFlagsBits.ManageGuild)) {
-      await interaction.reply({ content: "❌ Apenas administradores podem configurar o painel.", ephemeral: true });
+      await interaction.reply({ content: "❌ Apenas administradores podem configurar o painel.", flags: 64 });
       return true;
     }
     await interaction.reply({
@@ -47,7 +47,7 @@ async function handleButton(interaction) {
         new ButtonBuilder().setCustomId("abrir_modal_metas").setLabel("⚙️ Produtos e Metas").setStyle(ButtonStyle.Primary),
         new ButtonBuilder().setCustomId("abrir_modal_editar_farm").setLabel("✏️ Editar Farm de Jogador").setStyle(ButtonStyle.Secondary),
       )],
-      ephemeral: true,
+      flags: 64,
     });
     return true;
   }
@@ -74,7 +74,7 @@ async function handleButton(interaction) {
       components: [new ActionRowBuilder().addComponents(
         new UserSelectMenuBuilder().setCustomId("selecionar_jogador_edit_farm").setPlaceholder("Selecione o jogador"),
       )],
-      ephemeral: true,
+      flags: 64,
     });
     return true;
   }
@@ -100,7 +100,7 @@ async function handleButton(interaction) {
 
   if (id === "fechar_ticket") {
     if (!interaction.member.roles.cache.has("1498812659993280542")) {
-      await interaction.reply({ content: "❌ **Acesso Negado:** Apenas membros autorizados podem fechar esta sala.", ephemeral: true });
+      await interaction.reply({ content: "❌ **Acesso Negado:** Apenas membros autorizados podem fechar esta sala.", flags: 64 });
       return true;
     }
     await interaction.reply("🔒 Esta sala será apagada em 5 segundos...");
@@ -111,7 +111,7 @@ async function handleButton(interaction) {
   if (id === "finalizar_farm") {
     const farm = farmEmAndamento.get(interaction.channel.id);
     if (!farm) {
-      await interaction.reply({ content: "Farm não encontrado.", ephemeral: true });
+      await interaction.reply({ content: "Farm não encontrado.", flags: 64 });
       return true;
     }
 
@@ -143,7 +143,7 @@ async function handleButton(interaction) {
       await m.delete().catch(() => {});
       await interaction.deleteReply().catch(() => {});
       await interaction.message.delete().catch(() => {});
-      await interaction.followUp({ content: `✅ Farm de **${farm.qtd}x ${farm.itemNome}** registrado com sucesso!`, ephemeral: true });
+      await interaction.followUp({ content: `✅ Farm de **${farm.qtd}x ${farm.itemNome}** registrado com sucesso!`, flags: 64 });
       farmEmAndamento.delete(interaction.channel.id);
     });
     return true;
@@ -158,7 +158,7 @@ async function handleModal(interaction) {
   if (id === "modal_qtd_farm") {
     const qtd = parseInt(interaction.fields.getTextInputValue("qtd_farm"));
     if (isNaN(qtd) || qtd <= 0) {
-      await interaction.reply({ content: "Quantidade inválida.", ephemeral: true });
+      await interaction.reply({ content: "Quantidade inválida.", flags: 64 });
       return true;
     }
 
@@ -190,7 +190,7 @@ async function handleModal(interaction) {
     configFarm.ferro = parseInput(interaction.fields.getTextInputValue("cfg_ferro"), "Barra de Ferro");
     configFarm.sd = parseInput(interaction.fields.getTextInputValue("cfg_sd"), "Cartão SD");
 
-    await interaction.reply({ content: "✅ Produtos e metas atualizados com sucesso!", ephemeral: true });
+    await interaction.reply({ content: "✅ Produtos e metas atualizados com sucesso!", flags: 64 });
     return true;
   }
 
@@ -199,12 +199,12 @@ async function handleModal(interaction) {
     const vals = ["plastico", "aluminio", "polvora", "ferro", "sd"].map(k => parseInt(interaction.fields.getTextInputValue(`val_${k}`), 10));
 
     if (vals.some(isNaN)) {
-      await interaction.reply({ content: "❌ Todos os valores devem ser números válidos.", ephemeral: true });
+      await interaction.reply({ content: "❌ Todos os valores devem ser números válidos.", flags: 64 });
       return true;
     }
 
     bancoDeFarm.set(userId, { plastico: vals[0], aluminio: vals[1], polvora: vals[2], ferro: vals[3], sd: vals[4] });
-    await interaction.reply({ content: `✅ Farm do jogador <@${userId}> atualizado com sucesso!`, ephemeral: true });
+    await interaction.reply({ content: `✅ Farm do jogador <@${userId}> atualizado com sucesso!`, flags: 64 });
     return true;
   }
 
@@ -219,7 +219,7 @@ async function handleStringSelect(interaction) {
     if (tipo === "abrir_farm") {
       const { criarSalaFarm } = require("../../utils/farmHelpers");
       const canal = await criarSalaFarm(interaction.guild, interaction.member, configFarm).catch(console.error);
-      await interaction.reply({ content: `✅ Sua sala de farm foi criada: ${canal}`, ephemeral: true });
+      await interaction.reply({ content: `✅ Sua sala de farm foi criada: ${canal}`, flags: 64 });
     }
     return true;
   }
@@ -259,7 +259,7 @@ async function handleUserSelect(interaction) {
     components: [new ActionRowBuilder().addComponents(
       new ButtonBuilder().setCustomId(`abrir_modal_valores_edit_${userId}`).setLabel("✏️ Editar Quantidades").setStyle(ButtonStyle.Primary),
     )],
-    ephemeral: true,
+    flags: 64,
   });
   return true;
 }

@@ -44,12 +44,12 @@ async function handleButton(interaction) {
 
     if (acao === "aprovar") {
       if (!targetMember) {
-        await interaction.reply({ content: "Membro não encontrado.", ephemeral: true });
+        await interaction.reply({ content: "Membro não encontrado.", flags: 64 });
         return true;
       }
       const dados = sessoesDeRegistro.get(userId);
       if (!dados) {
-        await interaction.reply({ content: "Dados do registro não encontrados.", ephemeral: true });
+        await interaction.reply({ content: "Dados do registro não encontrados.", flags: 64 });
         return true;
       }
 
@@ -116,7 +116,7 @@ async function handleModal(interaction) {
       m.roles.cache.has("1498812659993280542"),
     );
     if (recruiters.size === 0) {
-      await interaction.reply({ content: "Nenhum recrutador disponível no momento.", ephemeral: true });
+      await interaction.reply({ content: "Nenhum recrutador disponível no momento.", flags: 64 });
       return true;
     }
 
@@ -128,7 +128,7 @@ async function handleModal(interaction) {
     await interaction.reply({
       content: "Selecione seu recrutador:",
       components: [new ActionRowBuilder().addComponents(menu)],
-      ephemeral: true,
+      flags: 64,
     });
     return true;
   }
